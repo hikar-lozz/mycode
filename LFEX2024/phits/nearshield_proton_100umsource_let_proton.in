@@ -1,0 +1,152 @@
+[ T i t l e ]
+minimized input file for lecture
+
+[ P a r a m e t e r s ]
+ icntl    =         0     # (D=0) 3:ECH 5:NOR 6:SRC 7:Geo.check,8:GSH 11:DSH 12:DUMP
+ maxcas   =       2e7     # (D=10) number of particles per one batch
+ maxbch   =        10     # (D=10) number of batches
+ ipnint   =         0     # photo nuclear reaction
+ file(6)  = phits.out     # (D=phits.out) general output file name
+# dmax(2)  = 20.0000000   # (D=emin(2)) data max. energy of neutron (MeV)
+# emin(2)  = 1e-10 # (D=1.0) cut-off energy of neutron (MeV)
+ e-mode = 1
+ esmin = 1.e-8            
+ file(7)  = c:/phits/data/xsdir.jnd # (D=xdirs) nuclear data input file name
+ file(14) = c:/phits/data/trxcrd.dat # (D=trxcrd.dat) photon data input file name
+ nspred = 2 $ （推奨）クーロン散乱を考慮する。Moliere 理論に基づくLynch の式[30] (Manual p.47)
+ nedisp = 1 $ （推奨）エネルギー分散を考慮する。Landau Vavilov[31] (Manual p.47)
+ negs = 1
+ nlost = 1000
+ 
+[ S o u r c e ]
+ <source> = 2
+   s-type =   9             # mono-energetic axial source
+     proj =  proton         # kind of incident particle     
+       x0 = 0
+       y0 = 0
+       z0 = 0
+       r1 = 0
+       r2 = 0.005    
+      dir = all         # z-direction of beam [cosine]
+   e-type = 5
+     f(x) = exp(-x/5)
+       nm = 50
+      eg1 = 3
+      eg2 = 18      
+
+[ M a t e r i a l ]
+ mat[1]     Fe 1 
+ mat[2]     Ta 1
+ mat[3]    12C 1  1H 1
+ mat[4]     1H 2 16O 1
+ mat[5]    12C 1 H 1   $ HD-V2 active layer
+ mat[6]    12C 10 1H 10 16O 5  $ HD-V2 mylar 
+ mat[7]    Al 1
+ 
+[ T r a n s f o r m ]
+ set: c1[3.0]
+ set: c2[0.0050]
+ set: c3[0.0012]
+ set: c4[0.0097]
+ *TR1  0 0 0  45 0 0  0 0 0  0 0 0  2 
+
+[ S u r f a c e ]
+ 10  so    10.0
+ 11  TRC   0 -1 0.3  0 1.0 0  0.1  0.0000001
+ 12  pz    3
+ 13  pz    3.0008
+ 14  px   -1
+ 15  px    1
+ 16  py   -1.0
+ 17  py    0.0
+ 18  pz    0.281
+ 19  pz    0.319    
+ 20  px   -0.05
+ 21  px    0.05
+ 22  py   -0.05
+ 23  py    0.05
+ 24  pz    0.15
+ 25  pz    0.155
+ 26  RCC   0 0 0.05  0 0 0.005  0.01
+ 27  BOX   -0.05 -0.05 0.05  0.1 0 0  0 0.1 0   0 0 0.005
+ 50  px   -1.5
+ 51  px    1.5
+ 52  py   -1.5
+ 53  py    1.5
+ 54  pz    c1                $ Al filter
+ 55  pz    c1+c2
+ 56  pz    c1+c2+1*c3        $ HD1
+ 57  pz    c1+c2+1*c3+1*c4
+ 58  pz    c1+c2+2*c3+1*c4   $ HD2
+ 59  pz    c1+c2+2*c3+2*c4
+ 60  pz    c1+c2+3*c3+2*c4   $ HD3
+ 61  pz    c1+c2+3*c3+3*c4 
+ 62  pz    c1+c2+4*c3+3*c4   $ HD4
+ 63  pz    c1+c2+4*c3+4*c4 
+ 64  pz    c1+c2+5*c3+4*c4   $ HD5
+ 65  pz    c1+c2+5*c3+5*c4 
+ 66  pz    c1+c2+6*c3+5*c4   $ HD6
+ 67  pz    c1+c2+6*c3+6*c4 
+ 68  pz    c1+c2+7*c3+6*c4   $ HD7
+ 69  pz    c1+c2+7*c3+7*c4   
+ 70  pz    c1+c2+8*c3+7*c4   $ HD8
+ 71  pz    c1+c2+8*c3+8*c4 
+ 72  pz    c1+c2+9*c3+8*c4   $ HD9
+ 73  pz    c1+c2+9*c3+9*c4 
+ 74  pz    c1+c2+10*c3+9*c4  $ HD10 
+ 75  pz    c1+c2+10*c3+10*c4
+ 76  p     0.0  0.0190  -0.217  -0.0638
+ 77  p     0.0  0.0190  0.217  0.0664
+ 78  p     0.0  1.000  -3.291  -0.984
+ 79  p     0.0  1.000  3.291  0.991
+ 
+[ C e l l ]
+ 100    -1              10               $ -1:out of simulation box, 0: vacuum
+ 101     0             -10 #102 #103 #110 #111 #112 #113 #114 #115 #116 #117 #118 #119 #120 #121 #122 #123 #124 #125 #126 #127 #128 #129 #130   $ Vacuum  
+ 102     1 -7.8        -10  14 -15  16 -17  18 -19 -76 -77 -78 -79  TRCL=1          $ Knife edge
+ 103     2 -16.65      -10  26 -27  TRCL=1       $ Proton shield
+ 110     7 -2.70       -10  50 -51  52 -53  54 -55    $ Al filter
+ 111     5 -0.90       -10  50 -51  52 -53  55 -56    $ 1st HD-V1
+ 112     6 -1.39       -10  50 -51  52 -53  56 -57    
+ 113     5 -0.90       -10  50 -51  52 -53  57 -58    $ 2nd HD-V1    
+ 114     6 -1.39       -10  50 -51  52 -53  58 -59
+ 115     5 -0.90       -10  50 -51  52 -53  59 -60    $ 3rd HD-V1
+ 116     6 -1.39       -10  50 -51  52 -53  60 -61
+ 117     5 -0.90       -10  50 -51  52 -53  61 -62    $ 4th HD-V1
+ 118     6 -1.39       -10  50 -51  52 -53  62 -63
+ 119     5 -0.90       -10  50 -51  52 -53  63 -64    $ 5th HD-V1
+ 120     6 -1.39       -10  50 -51  52 -53  64 -65
+ 121     5 -0.90       -10  50 -51  52 -53  65 -66    $ 6th HD-V1
+ 122     6 -1.39       -10  50 -51  52 -53  66 -67
+ 123     5 -0.90       -10  50 -51  52 -53  67 -68    $ 7th HD-V1
+ 124     6 -1.39       -10  50 -51  52 -53  68 -69
+ 125     5 -0.90       -10  50 -51  52 -53  69 -70    $ 8th HD-V1
+ 126     6 -1.39       -10  50 -51  52 -53  70 -71
+ 127     5 -0.90       -10  50 -51  52 -53  71 -72    $ 9th HD-V1
+ 128     6 -1.39       -10  50 -51  52 -53  72 -73
+ 129     5 -0.90       -10  50 -51  52 -53  73 -74    $ 10th HD-V1
+ 130     6 -1.39       -10  50 -51  52 -53  74 -75    
+
+[ T - L E T ]
+     mesh =  xyz              # mesh type is xyz scoring mesh
+   x-type =    2              # x-mesh is linear given by xmin, xmax and nx
+       nx =   51              # number of x-mesh points
+     xmin = -0.765              # minimum value of x-mesh points
+     xmax =  0.765              # maximum value of x-mesh points
+   y-type =    2              
+       ny =   51              
+     ymin = -0.765
+     ymax =  0.765
+   z-type =    1              
+       nz =    5
+     3.0159 3.0171 3.0486 3.0498 3.0813 3.0825
+   l-type =    2              
+       nl =   16
+     lmin =    0              # keV/um
+     lmax =   80
+     part = proton
+     axis =  let
+     file = t_let.dat
+     unit =    6              # MeV/source
+
+[ E n d ]
