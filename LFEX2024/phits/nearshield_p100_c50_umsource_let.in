@@ -260,7 +260,7 @@ minimized input file for lecture
      lmax =   80
      part =  all
      axis =  let
-     file = t_let_proton.dat
+     file = t_let_all.dat
      unit =    6              # MeVsource  
    
 [ E n d ]
