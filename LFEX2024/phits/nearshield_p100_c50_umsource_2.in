@@ -2,7 +2,7 @@
 minimized input file for lecture
 
 [ P a r a m e t e r s ]
- icntl    =         0     # (D=0) 3ECH 5NOR 6SRC 7Geo.check,8GSH 11DSH 12DUMP
+ icntl    =         0     # (D=0) 3:ECH 5:NOR 6:SRC 7:Geo.check,8:GSH 11:DSH 12:DUMP
  maxcas   =       1e8     # (D=10) number of particles per one batch
  maxbch   =        10     # (D=10) number of batches
  ipnint   =         0      # photo nuclear reaction
@@ -11,15 +11,15 @@ minimized input file for lecture
 # emin(2)  = 1e-10 # (D=1.0) cut-off energy of neutron (MeV)
  e-mode = 1
  esmin = 1.e-8
- file(7)  = cphitsdataxsdir.jnd # (D=xdirs) nuclear data input file name
- file(14) = cphitsdatatrxcrd.dat # (D=trxcrd.dat) photon data input file name
+ file(7)  = c:/phits/data/xsdir.jnd # (D=xdirs) nuclear data input file name
+ file(14) = c:/phits/data/trxcrd.dat # (D=trxcrd.dat) photon data input file name
  nspred = 2 $ （推奨）クーロン散乱を考慮する。Moliere 理論に基づくLynch の式[30] (Manual p.47)
  nedisp = 1 $ （推奨）エネルギー分散を考慮する。Landau Vavilov[31] (Manual p.47)
  negs = 1
  nlost = 1000
  
 [ S o u r c e ]
- source = 2
+ <source> = 2
    s-type = 9               # mono-energetic axial source
      proj = proton          # kind of incident particle     
        x0 = 0
@@ -34,7 +34,7 @@ minimized input file for lecture
       eg1 = 1
       eg2 = 5
 
- source = 2
+ <source> = 2
    s-type = 9               # mono-energetic axial source
      proj = proton          # kind of incident particle     
        x0 = 0
@@ -44,12 +44,12 @@ minimized input file for lecture
        r2 = 0.005    
       dir = all           
    e-type = 5
-     f(x) = exp(2.78 - 0.877  x)
+     f(x) = exp(2.78 - 0.877 * x)
        nm = 50
       eg1 = 5
       eg2 = 9
 
- source = 2
+ <source> = 2
    s-type = 9               # mono-energetic axial source
      proj = proton          # kind of incident particle     
        x0 = 0
@@ -59,12 +59,12 @@ minimized input file for lecture
        r2 = 0.005    
       dir = all           
    e-type = 5
-     f(x) = exp(-2.64 - 0.275  x)
+     f(x) = exp(-2.64 - 0.275 * x)
        nm = 50
       eg1 = 9
       eg2 = 13
 
- source = 1
+ <source> = 1
    s-type = 9               # mono-energetic axial source
      proj = 6000012         # kind of incident particle     
        x0 = 0
@@ -74,7 +74,7 @@ minimized input file for lecture
        r2 = 0.0025    
       dir = all             
    e-type = 5
-     f(x) = exp(-2.33 - 0.110  x)
+     f(x) = exp(-2.33 - 0.110 * x)
        nm = 480
       eg1 = 3
       eg2 = 50       
@@ -89,11 +89,11 @@ minimized input file for lecture
  mat[7]    Al 1
  
 [ T r a n s f o r m ]
- set c1[3.0]
- set c2[0.0050]
- set c3[0.0012]
- set c4[0.0097]
- TR1  0 0 0  45 0 0  0 0 0  0 0 0  2 
+ set: c1[3.0]
+ set: c2[0.0050]
+ set: c3[0.0012]
+ set: c4[0.0097]
+ *TR1  0 0 0  45 0 0  0 0 0  0 0 0  2 
 
 [ S u r f a c e ]
  10  so    10.0
@@ -120,33 +120,33 @@ minimized input file for lecture
  53  py    1.5
  54  pz    c1                $ Al filter
  55  pz    c1+c2
- 56  pz    c1+c2+1c3        $ HD1
- 57  pz    c1+c2+1c3+1c4
- 58  pz    c1+c2+2c3+1c4   $ HD2
- 59  pz    c1+c2+2c3+2c4
- 60  pz    c1+c2+3c3+2c4   $ HD3
- 61  pz    c1+c2+3c3+3c4 
- 62  pz    c1+c2+4c3+3c4   $ HD4
- 63  pz    c1+c2+4c3+4c4 
- 64  pz    c1+c2+5c3+4c4   $ HD5
- 65  pz    c1+c2+5c3+5c4 
- 66  pz    c1+c2+6c3+5c4   $ HD6
- 67  pz    c1+c2+6c3+6c4 
- 68  pz    c1+c2+7c3+6c4   $ HD7
- 69  pz    c1+c2+7c3+7c4   
- 70  pz    c1+c2+8c3+7c4   $ HD8
- 71  pz    c1+c2+8c3+8c4 
- 72  pz    c1+c2+9c3+8c4   $ HD9
- 73  pz    c1+c2+9c3+9c4 
- 74  pz    c1+c2+10c3+9c4  $ HD10 
- 75  pz    c1+c2+10c3+10c4
+ 56  pz    c1+c2+1*c3        $ HD1
+ 57  pz    c1+c2+1*c3+1*c4
+ 58  pz    c1+c2+2*c3+1*c4   $ HD2
+ 59  pz    c1+c2+2*c3+2*c4
+ 60  pz    c1+c2+3*c3+2*c4   $ HD3
+ 61  pz    c1+c2+3*c3+3*c4 
+ 62  pz    c1+c2+4*c3+3*c4   $ HD4
+ 63  pz    c1+c2+4*c3+4*c4 
+ 64  pz    c1+c2+5*c3+4*c4   $ HD5
+ 65  pz    c1+c2+5*c3+5*c4 
+ 66  pz    c1+c2+6*c3+5*c4   $ HD6
+ 67  pz    c1+c2+6*c3+6*c4 
+ 68  pz    c1+c2+7*c3+6*c4   $ HD7
+ 69  pz    c1+c2+7*c3+7*c4   
+ 70  pz    c1+c2+8*c3+7*c4   $ HD8
+ 71  pz    c1+c2+8*c3+8*c4 
+ 72  pz    c1+c2+9*c3+8*c4   $ HD9
+ 73  pz    c1+c2+9*c3+9*c4 
+ 74  pz    c1+c2+10*c3+9*c4  $ HD10 
+ 75  pz    c1+c2+10*c3+10*c4
  76  p     0.0  0.0190  -0.217  -0.0638
  77  p     0.0  0.0190  0.217  0.0664
  78  p     0.0  1.000  -3.291  -0.984
  79  p     0.0  1.000  3.291  0.991
  
 [ C e l l ]
- 100    -1              10               $ -1out of simulation box, 0 vacuum
+ 100    -1              10               $ -1:out of simulation box, 0: vacuum
  101     0             -10 #102 #103 #110 #111 #112 #113 #114 #115 #116 #117 #118 #119 #120 #121 #122 #123 #124 #125 #126 #127 #128 #129 #130   $ Vacuum  
  102     1 -7.8        -10  14 -15  16 -17  18 -19 -76 -77 -78 -79  TRCL=1          $ Knife edge
  103     2 -16.65      -10  26 -27  TRCL=1       $ Proton shield
@@ -189,15 +189,40 @@ minimized input file for lecture
    e-type =  1
        ne = 1
          0  100
+     part = proton
+     axis =   xy            # axis of output
+     unit =    1            
+    angel = ZLIN MONO SMAX(-1.0) SMIN(-0.0) 
+     file = t_track_proton_radiography.dat    # file name of output for the above axis
+    title = trajectory using [T-track] tally
+   epsout =    1            # (D=0) generate eps file by ANGEL
+
+[ T - T r a c k ]
+     mesh =  xyz            # mesh type is xyz scoring mesh
+   x-type =    2            # x-mesh is linear given by xmin, xmax and nx
+       nx =  600            # number of x-mesh points
+     xmin =   -1.5           # minimum value of x-mesh points
+     xmax =    1.5           # maximum value of x-mesh points
+   y-type =    2            # z-mesh is given by the below data
+       ny =  600            # number of z-mesh points
+     ymin =   -1.5
+     ymax =    1.5
+   z-type =    2            # y-mesh is linear given by ymin, ymax and ny
+       nz =   1            # number of y-mesh points
+     zmin =   3           # minimum value of y-mesh points
+     zmax =   3.00001           # maximum value of y-mesh points
+   e-type =  1
+       ne = 1
+         0  100
      part = all
      axis =   xy            # axis of output
      unit =    1            
     angel = ZLIN MONO SMAX(-1.0) SMIN(-0.0) 
-     file = t_track_radiography.dat    # file name of output for the above axis
+     file = t_track_all_radiography.dat    # file name of output for the above axis
     title = trajectory using [T-track] tally
    epsout =    1            # (D=0) generate eps file by ANGEL 
    
- [ T - d e p o s i t ] 
+[ T - d e p o s i t ] 
      mesh =  xyz            # mesh type is xyz scoring mesh
    x-type =    2            # x-mesh is linear given by xmin, xmax and nx
        nx =  600            # number of x-mesh points
@@ -218,49 +243,5 @@ minimized input file for lecture
      file = t_deposit_radiography.dat    # file name of output for the above axis
     title = trajectory using [T-deposit] tally
    epsout =    1            # (D=0) generate eps file by ANGEL
-
-[ T - L E T ]
-     mesh =  xyz              # mesh type is xyz scoring mesh
-   x-type =    2              # x-mesh is linear given by xmin, xmax and nx
-       nx =   51              # number of x-mesh points
-     xmin = -0.765              # minimum value of x-mesh points
-     xmax =  0.765              # maximum value of x-mesh points
-   y-type =    2              
-       ny =   51              
-     ymin = -0.765
-     ymax =  0.765
-   z-type =    1              
-       nz =    5
-     3.0159 3.0171 3.0486 3.0498 3.0813 3.0825      
-   l-type =    2              
-       nl =   16
-     lmin =    0              # keVum
-     lmax =   80
-     part =  proton
-     axis =  let
-     file = t_let_proton.dat
-     unit =    6              # MeVsource  
-
-[ T - L E T ]
-     mesh =  xyz              # mesh type is xyz scoring mesh
-   x-type =    2              # x-mesh is linear given by xmin, xmax and nx
-       nx =   51              # number of x-mesh points
-     xmin = -0.765              # minimum value of x-mesh points
-     xmax =  0.765              # maximum value of x-mesh points
-   y-type =    2              
-       ny =   51              
-     ymin = -0.765
-     ymax =  0.765
-   z-type =    1              
-       nz =    5
-     3.0159 3.0171 3.0486 3.0498 3.0813 3.0825      
-   l-type =    2              
-       nl =   16
-     lmin =    0              # keVum
-     lmax =   80
-     part =  all
-     axis =  let
-     file = t_let_all.dat
-     unit =    6              # MeVsource  
    
 [ E n d ]
