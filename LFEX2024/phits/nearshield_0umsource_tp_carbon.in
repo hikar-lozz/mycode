@@ -19,42 +19,20 @@ minimized input file for lecture
  nlost = 1000
  
 [ S o u r c e ]
-# <source> = 1
-#   s-type =   1             # mono-energetic axial source
-#     proj =  proton         # kind of incident particle         
-#      dir =   1         # z-direction of beam [cosine]
-#      phi =   0
-#      dom =   45
-#       r0 =   0.000010           # outer radius [cm]
-#       z0 =  -0.000010            # minimum position of z-axis [cm]
-#       z1 =   0.0            # maximum position of z-axis [cm]
-#       e0 =   10          # energy of beam [MeV]
-#   e-type = 5
-#     f(x) = exp(-x/5)
-#       nm = 50
-#      eg1 = 3
-#      eg2 = 18
-
- <source> = 2
-   s-type =   9             # mono-energetic axial source
-     proj =  proton         # kind of incident particle     
+ <source> = 1
+   s-type = 9               # mono-energetic axial source
+     proj = 6000012         # kind of incident particle     
        x0 = 0
        y0 = 0
        z0 = 0
        r1 = 0
-       r2 = 0.01   
-      dir = all        # z-direction of beam [cosine]
+       r2 = 0.000000000005    
+      dir = all             
    e-type = 5
-     f(x) = exp(-x/5)
-       nm = 50
+     f(x) = exp(-2.33 - 0.110 * x)
+       nm = 480
       eg1 = 3
-      eg2 = 18
-
-#   e-type = 5
-#     f(x) = exp(-((x-3)^2)/5)
-#       nm = 50
-#      eg1 = 3
-#      eg2 = 18           
+      eg2 = 50       
 
 [ M a t e r i a l ]
  mat[1]     Fe 1 
@@ -148,45 +126,6 @@ minimized input file for lecture
  128     6 -1.39       -10  50 -51  52 -53  72 -73
  129     5 -0.90       -10  50 -51  52 -53  73 -74    $ 10th HD-V1
  130     6 -1.39       -10  50 -51  52 -53  74 -75    
- 
-[ T - g s h o w ]
-     mesh =  xyz            # mesh type is xyz scoring mesh
-   y-type =    2            # x-mesh is linear given by xmin, xmax and nx
-       ny =   500            # number of x-mesh points
-     ymin =  -0.1           # minimum value of x-mesh points
-     ymax =   0.1           # maximum value of x-mesh points
-   z-type =    2            # y-mesh is linear given by ymin, ymax and ny
-       nz =   500            # number of y-mesh points
-     zmin =   3          # minimum value of y-mesh points
-     zmax =   4           # maximum value of y-mesh points
-   x-type =    1            # z-mesh is given by the below data
-       nx =    1            # number of z-mesh points
-           -0.1  0.1
-     axis =   yz            # axis of output
-   output =    6            # (D=2) 1:bnd, 2:bnd+mat, 3:bnd+num 4:bnd+mat+num
-     file = yz_gshow.dat    # file name of output for the above axis
-    title = Check geometry using [T-gshow] tally
-   epsout =    1            # (D=0) generate eps file by ANGEL
-   
-[ T - g s h o w ]
-     mesh =  xyz            # mesh type is xyz scoring mesh
-   x-type =    2            # x-mesh is linear given by xmin, xmax and nx
-       nx =   100            # number of x-mesh points
-     xmin =  -1           # minimum value of x-mesh points
-     xmax =   1           # maximum value of x-mesh points
-   y-type =    2            # y-mesh is linear given by ymin, ymax and ny
-       ny =   100            # number of y-mesh points
-     ymin =  -1           # minimum value of y-mesh points
-     ymax =   1           # maximum value of y-mesh points
-   z-type =    2            # z-mesh is given by the below data
-       nz =    1            # number of z-mesh points
-     zmin =   0.05           # minimum value of y-mesh points
-     zmax =   0.055           # maximum value of y-mesh points
-     axis =   xy            # axis of output
-   output =    6            # (D=2) 1:bnd, 2:bnd+mat, 3:bnd+num 4:bnd+mat+num
-     file = xy_gshow.dat    # file name of output for the above axis
-    title = Check geometry using [T-gshow] tally
-   epsout =    1            # (D=0) generate eps file by ANGEL
    
 [ T - T r a c k ]
      mesh =  xyz            # mesh type is xyz scoring mesh
@@ -205,36 +144,13 @@ minimized input file for lecture
    e-type =  1
        ne = 1
          0  100
-     part = proton
+     part = 6000012
      axis =   xy            # axis of output
      unit =    1            
     angel = ZLIN MONO SMAX(-1.0) SMIN(-0.0) 
      file = t_track_radiography.dat    # file name of output for the above axis
     title = trajectory using [T-track] tally
    epsout =    1            # (D=0) generate eps file by ANGEL
-   
- [ T - d e p o s i t ] off 
-     mesh =  xyz            # mesh type is xyz scoring mesh
-   x-type =    2            # x-mesh is linear given by xmin, xmax and nx
-       nx =  600            # number of x-mesh points
-     xmin =   -1.5           # minimum value of x-mesh points
-     xmax =    1.5           # maximum value of x-mesh points
-   y-type =    2            # z-mesh is given by the below data
-       ny =  600            # number of z-mesh points
-     ymin =   -1.5
-     ymax =    1.5
-   z-type =    2            # y-mesh is linear given by ymin, ymax and ny
-       nz =   1            # number of y-mesh points
-     zmin =   3           # minimum value of y-mesh points
-     zmax =   3.0008           # maximum value of y-mesh points
-     part = all
-     axis =   xy            # axis of output
-   output = dose
-     unit =    2            
-    angel = ZLIN MONO SMAX(-1.0) SMIN(-0.0) CMIN(0.00000001)
-     file = t_deposit_radiography.dat    # file name of output for the above axis
-    title = trajectory using [T-deposit] tally
-   epsout =    1            # (D=0) generate eps file by ANGEL  
    
  [ T - d e p o s i t ] 
      mesh =  xyz            # mesh type is xyz scoring mesh
@@ -252,11 +168,10 @@ minimized input file for lecture
      part = all
      axis =   xy            # axis of output
    output = dose
-     unit =    0            
+     unit =    0           
     angel = ZLIN MONO SMAX(-1.0) SMIN(-0.0) CMIN(0.00000001)
      file = t_deposit_radiography.dat    # file name of output for the above axis
     title = trajectory using [T-deposit] tally
    epsout =    1            # (D=0) generate eps file by ANGEL  
-   
 
 [ E n d ]
