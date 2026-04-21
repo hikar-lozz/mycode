@@ -126,22 +126,16 @@ def main(dat_file):
             #    if iy_min <= iy <= iy_max:
             #        spectra[iz] += dose
 
-            # ===== 新しい条件（最後にココを編集すれば完了） =====
+            # ===== 新しい条件 =====
             # ・iz が RCF層に対応
             if iz in iz_list:
-                if 15 <= ix <= 24:
-                    iy_min = 43 - ix
-                    iy_max = 13 + ix
-                elif 25 <= ix <= 27:
-                    iy_min = 43 - ix
-                    iy_max = 61 - ix
-                elif 28 <= ix <= 37:
-                    iy_min = -13 + ix
-                    iy_max = 61 - ix
-                else:
-                    continue
+                cx, cy = 42.5, 42.5
+                dx = (ix - 0.5) - cx
+                dy = (iy - 0.5) - cy
+                limit_w = (26 / 2) * (2 ** 0.5)
+                limit_h = (56 / 2) * (2 ** 0.5)
 
-                if iy_min <= iy <= iy_max:
+                if abs(dx + dy) <= limit_w and abs(dx - dy) <= limit_h:
                     spectra[iz] += dose
 
         else:

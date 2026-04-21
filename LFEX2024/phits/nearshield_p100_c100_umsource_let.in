@@ -175,13 +175,13 @@ minimized input file for lecture
 [ T - L E T ]
      mesh =  xyz              # mesh type is xyz scoring mesh
    x-type =    2              # x-mesh is linear given by xmin, xmax and nx
-       nx =  103              # number of x-mesh points
-     xmin = -1.53              # minimum value of x-mesh points
-     xmax =  1.53              # maximum value of x-mesh points
+       nx =   84              # number of x-mesh points
+     xmin = -0.42              # minimum value of x-mesh points
+     xmax =  0.42              # maximum value of x-mesh points
    y-type =    2              
-       ny =  103              
-     ymin = -1.53
-     ymax =  1.53
+       ny =   84              
+     ymin = -0.42
+     ymax =  0.42
    z-type =    1              
        nz =    3
      3.0159 3.0171 3.0486 3.0498      
@@ -197,13 +197,13 @@ minimized input file for lecture
 [ T - L E T ]
      mesh =  xyz              # mesh type is xyz scoring mesh
    x-type =    2              # x-mesh is linear given by xmin, xmax and nx
-       nx =  103              # number of x-mesh points
-     xmin = -1.53              # minimum value of x-mesh points
-     xmax =  1.53              # maximum value of x-mesh points
+       nx =   84              # number of x-mesh points
+     xmin = -0.42              # minimum value of x-mesh points
+     xmax =  0.42              # maximum value of x-mesh points
    y-type =    2              
-       ny =  103              
-     ymin = -1.53
-     ymax =  1.53
+       ny =   84              
+     ymin = -0.42
+     ymax =  0.42
    z-type =    1              
        nz =    3
      3.0159 3.0171 3.0486 3.0498      
