@@ -3,7 +3,7 @@ minimized input file for lecture
 
 [ P a r a m e t e r s ]
  icntl    =         0     # (D=0) 3:ECH 5:NOR 6:SRC 7:Geo.check,8:GSH 11:DSH 12:DUMP
- maxcas   =       2e7     # (D=10) number of particles per one batch
+ maxcas   =       4e7     # (D=10) number of particles per one batch
  maxbch   =        10     # (D=10) number of batches
  ipnint   =         0      # photo nuclear reaction
  file(6)  = phits.out       # (D=phits.out) general output file name
@@ -186,9 +186,9 @@ minimized input file for lecture
        nz =    3
      3.0159 3.0171 3.0486 3.0498      
    l-type =    2              
-       nl =   16
+       nl =   20
      lmin =    0              # keV/um
-     lmax =   80
+     lmax =  200
      part =  proton
      axis =  let
      file = t_let_proton.dat
@@ -208,9 +208,9 @@ minimized input file for lecture
        nz =    3
      3.0159 3.0171 3.0486 3.0498      
    l-type =    2              
-       nl =   16
+       nl =   20
      lmin =    0              # keV/um
-     lmax =   80
+     lmax =  200
      part =  6000012
      axis =  let
      file = t_let_carbon.dat

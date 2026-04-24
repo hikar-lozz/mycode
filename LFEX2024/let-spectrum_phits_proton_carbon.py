@@ -44,8 +44,8 @@ def main(dat_file):
     # ============================================================
     # 3. 結果格納用配列の初期化
     # ============================================================
-    # 各 iz（RCF層）ごとに、LET16ビン分の積算配列を用意
-    spectra = {iz: np.zeros(16) for iz in iz_list}
+    # 各 iz（RCF層）ごとに、LET20ビン分の積算配列を用意
+    spectra = {iz: np.zeros(20) for iz in iz_list}
 
     # LETビンの下限・上限（全セル共通なので最初の1回だけ保存）
     lwr_global = None
@@ -86,13 +86,13 @@ def main(dat_file):
             i += 1
 
             # ----------------------------------------------------
-            # LET 16ビン分のデータを必ず読み取る
+            # LET 20ビン分のデータを必ず読み取る
             # ----------------------------------------------------
-            lwr = np.zeros(16)   # LET下限
-            upr = np.zeros(16)   # LET上限
-            dose = np.zeros(16)  # 各LETビンのDose
+            lwr = np.zeros(20)   # LET下限
+            upr = np.zeros(20)   # LET上限
+            dose = np.zeros(20)  # 各LETビンのDose
 
-            for k in range(16):
+            for k in range(20):
                 parts = lines[i].split()
                 lwr[k] = float(parts[0])
                 upr[k] = float(parts[1])
