@@ -1,0 +1,60 @@
+import sys
+import numpy as np
+import pandas as pd
+
+# t_deposit_radiographyを読み込む
+filename = sys.argv[1]
+
+# シールドの位置を確認
+print("操作： 実験構成におけるシールドの配置を教えてください.")
+user_input = input("position of shield 'far' or 'near': ")
+# 実験のRCF(35×35mm,600dots per inch)とシミュレーション(3×3cm,600×600cell=20cells per mm)
+# 上記を考慮してプロファイルを取る長さを決定
+if user_input.lower() == "far":
+    length_take_average = 16
+    length_line = 84
+elif user_input.lower() == "near":
+    length_take_average = 50
+    length_line = 254
+
+# 変更点：RCF10層分の「合計値」を格納する配列を定義 (1行10列)
+total_deposit_array = np.zeros((1, 10))
+
+# 以下の操作をRCF10層分だけ繰り返す
+for i in range(1,11):
+    start_line = 304 + 72058 * (i - 1)
+    end_line = 36303 + 72058 * (i - 1)
+    with open(filename, 'r') as file:
+        lines = file.readlines()[start_line-1:end_line]
+    deposit_array = np.array([list(map(float, line.split())) for line in lines])
+    deposit_array = deposit_array.reshape((600, 600))       # output sizeの600×600に合わせる
+    
+    # --- 32行目付近以降の変更箇所 ---
+    layer_sum = 0.0  # 各層における指定範囲の合計値を初期化
+    
+    # 以前ラインプロファイルを取っていた走査方向のラインを辿る
+    for j in range(-length_line // 2, length_line // 2 + 1):
+        xj = 300 + j
+        yj = 300 + j
+        
+        # 平均をとる方向だったラインも同様に辿る
+        for k in range(-length_take_average // 2, length_take_average // 2 + 1):
+            xk = xj + k
+            yk = yj - k
+            
+            # 指定範囲内のdepositを取得し、NaNを除外して加算していく
+            val = deposit_array[int(xk), int(yk)]
+            if not np.isnan(val):
+                layer_sum += val
+                
+    # 計算したその層の合計値を配列に格納（i-1列目）
+    total_deposit_array[0, i-1] = layer_sum
+
+# 合計値をわかりやすい形で保存するためにカラム名を付けて保存
+column_names = [f"Layer {i}" for i in range(1, 11)]
+df_total_deposit = pd.DataFrame(total_deposit_array, columns=column_names)
+
+# 出力ファイル名を作成し、エクセルファイルとして保存
+output_filename = 'total-dose_' + filename.replace('.dat', '.xlsx')
+df_total_deposit.to_excel(output_filename, index=False)
+print(f"各層の合計値を{output_filename}として保存しました")
