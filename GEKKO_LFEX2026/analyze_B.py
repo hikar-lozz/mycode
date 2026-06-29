@@ -67,26 +67,24 @@ for i in tqdm.tqdm(range(int(len(timesteps)))):
     plt.rcParams["font.size"] = 28
     ax1 = fig.add_subplot(111)
     
-    # 物理時間 [ps] の厳密な自動計算 (実際のタイムステップ数 * dt * 基準時間 * 1e12)
+    # 物理時間 [ps] の厳密な自動計算
     actual_timestep = timesteps[i]
     time_ps = (actual_timestep * dt * Tr) * 1e12
     ax1.text(0.99, 0.99, "time = {:.2f} [ps]".format(time_ps), va='top', ha='right', transform=ax1.transAxes, color='black')
     
-    # 描画 (今回のターゲットサイズやレーザー強度に合わせて最大・最小値を必要に応じて調整してください)
+    # 描画
     img1 = ax1.imshow(Bz_data, aspect='equal', origin='lower', cmap='bwr', vmin=-30, vmax=30)
     
-    # カラーバー設定
-    divider = make_axes_locatable(ax1)
-    cax1 = divider.append_axes("right", size="5%", pad=0.1)
-    cbar1 = fig.colorbar(img1, ax=ax1, cax=cax1)
+    #【ここを修正しました】make_axes_locatable を使わずにカラーバーを設定
+    # fraction=0.046 でメインのグラフと縦幅を揃え、pad=0.04 で適切な隙間を空けています
+    cbar1 = fig.colorbar(img1, ax=ax1, fraction=0.046, pad=0.04)
     cbar1.set_label("Magnetic field [kT]")
     
     ax1.set_title('Bz')
     ax1.set_xlabel("x [$\mu$m]")
     ax1.set_ylabel("y [$\mu$m]")
     
-    # 空間軸の目盛りを 8192 グリッド（400 μm）に合わせて自動マッピング
-    # 100 μm 刻みで綺麗に表示
+    # 空間軸の目盛りを自動マッピング
     ax1.set_xticks([0, 2048, 4096, 6144, 8192])
     ax1.set_xticklabels(["0", "100", "200", "300", "400"])
     ax1.set_yticks([0, 2048, 4096, 6144, 8192])
@@ -94,7 +92,7 @@ for i in tqdm.tqdm(range(int(len(timesteps)))):
 
     # 保存
     fig.savefig('{}/Bz_{:03d}.png'.format(fig_dir, i))
-    plt.close()
+    plt.close(fig)  # メモリリーク対策のため fig を明示的に閉じるように変更
 
 # 一時フォルダの削除
 shutil.rmtree(data_dir)
