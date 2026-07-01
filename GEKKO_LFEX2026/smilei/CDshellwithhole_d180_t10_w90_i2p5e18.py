@@ -84,7 +84,7 @@ Main(
   geometry = "2Dcartesian",
   interpolation_order = 2,
   timestep_over_CFL = 0.99,
-  simulation_time = 3500*fs,
+  simulation_time = 7000*fs,
   cell_length  = [dx, dy],
   grid_length = [ Lx, Ly ],
   number_of_patches = [32, 32],

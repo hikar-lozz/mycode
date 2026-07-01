@@ -39,43 +39,43 @@ Ly = ny * dy
 x0 = Lx/2.
 y0 = Ly/2.
 
-shell_inside_radius = 100*um
-shell_thickness = 7*um
+shell_inside_radius = 90*um
+shell_thickness = 10*um
 shell_outside_radius = shell_inside_radius + shell_thickness
 shell_contamination_thickness = 0.5*um
-shell_hole_diameter = 100*um
-shell_cut_position = x0 - math.sqrt((shell_inside_radius)**2 - (shell_hole_diameter/2.)**2)
+# shell_hole_diameter = 90*um
+# shell_cut_position = x0 - math.sqrt((shell_inside_radius)**2 - (shell_hole_diameter/2.)**2)
 
 def electron_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if (shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius) and (x > shell_cut_position):
+    if shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius:
         return 10.
-    elif (shell_inside_radius < r < shell_outside_radius) and (x > shell_cut_position):
+    elif shell_inside_radius < r < shell_outside_radius:
         return 30.
-    elif (shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness) and (x > shell_cut_position):
+    elif shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness:
         return 10.
     else:
         return 0.
     
 def deutron_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if (shell_inside_radius < r < shell_outside_radius) and (x > shell_cut_position):
+    if shell_inside_radius < r < shell_outside_radius:
         return 30./7.
     else:
         return 0.
 
 def carbon_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if (shell_inside_radius < r < shell_outside_radius) and (x > shell_cut_position):
+    if shell_inside_radius < r < shell_outside_radius:
         return 30./7.
     else:
         return 0.
 
 def proton_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if (shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius) and (x > shell_cut_position):
+    if shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius:
         return 10.
-    elif (shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness) and (x > shell_cut_position):
+    elif shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness:
         return 10.
     else:
         return 0.
@@ -84,7 +84,7 @@ Main(
   geometry = "2Dcartesian",
   interpolation_order = 2,
   timestep_over_CFL = 0.99,
-  simulation_time = 3500*fs,
+  simulation_time = 7000*fs,
   cell_length  = [dx, dy],
   grid_length = [ Lx, Ly ],
   number_of_patches = [32, 32],
@@ -155,7 +155,7 @@ Species(
 
 LaserGaussian2D(
     box_side        = "xmin",
-    a0              = 3.1630746570195454,
+    a0              = 0.7907686655992375*2,
     omega = 1,
     focus           = [Lx/2., Ly/2.],
     waist           = 30*um/math.sqrt(2*math.log(2)),
