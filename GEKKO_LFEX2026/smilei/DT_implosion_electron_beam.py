@@ -249,7 +249,7 @@ ParticleInjector(
     # 温度：
     # - 「熱温度 4.91 MeV」なら theta_T（=9.61）を入れる
     # - 「熱は不要で単色ビーム」なら極小（例: 1e-30）
-    temperature = [1e-30],
+    temperature = [theta_T],
 
     number_density = number_density_scale,
     particles_per_cell = 1,
