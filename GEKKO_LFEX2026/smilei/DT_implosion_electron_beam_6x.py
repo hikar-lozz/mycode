@@ -103,7 +103,7 @@ Main(
       ["silver-muller","silver-muller"],
     ],
   solve_poisson = False,
-  print_every = 100,
+  print_every = 1000,
   reference_angular_frequency_SI = wr,
 )
 
@@ -117,7 +117,7 @@ Species(
     position_initialization = "random",
     momentum_initialization = "maxwell-juettner",
     #particles_per_cell = electron_ppc,
-    particles_per_cell = 800,
+    particles_per_cell = 80, # 800→80
     mass = 1.0,
     charge = -1.0,
     number_density = electron_density,
@@ -132,7 +132,7 @@ Species(
     position_initialization = "random",
     momentum_initialization = "maxwell-juettner",
     #particles_per_cell = deuteron_ppc,
-    particles_per_cell = 80,
+    particles_per_cell = 8, # 80→8
     mass = 1837.4*2,
     charge = 1.0,
     number_density = deuteron_density,
@@ -147,7 +147,7 @@ Species(
     position_initialization = "random",
     momentum_initialization = "maxwell-juettner",
     #particles_per_cell = tritium_ppc,
-    particles_per_cell = 80,
+    particles_per_cell = 8, # 80→8
     mass = 1837.4*3,
     charge = 1.0,
     number_density = tritium_density,
@@ -195,6 +195,7 @@ E_drift_MeV = 4.91
 me_c2_MeV   = 0.511
 gamma_drift = 1.0 + E_drift_MeV / me_c2_MeV
 beta_n_0    = np.sqrt(1.0 - 1.0 / (gamma_drift**2))  # ~0.995547...
+p_x = gamma_drift * beta_n_0
 
 # ============================================================
 # 3) （オプション）熱温度を 4.91 MeV にする場合の規格化温度 theta
@@ -223,7 +224,7 @@ Species(
 # 5) 注入数（実粒子数）から number_density を作る
 #    N_target_0 = 7.627...e12（今回）
 # ============================================================
-N_target_0 = 7.627098665328835e12 * 3
+N_target_0 = 7.627098665328835e12 * 6
 
 # あなたの式：N = n * Nr * (Ly*Lr) * (beta*c) * (tau_si * sqrt(pi/(4 ln2)))
 # ここで (Ly*Lr) は「境界面積（2Dなら長さ）」のつもりの項
@@ -244,18 +245,18 @@ ParticleInjector(
     momentum_initialization = "maxwell-juettner",
 
     # x方向ドリフト（v/c）
-    mean_velocity = [beta_n_0, 0., 0.],
+    mean_velocity = [0., 0., 0.],
 
     # 温度：
     # - 「熱温度 4.91 MeV」なら theta_T（=9.61）を入れる
     # - 「熱は不要で単色ビーム」なら極小（例: 1e-30）
-    temperature = [theta_T],
+    temperature = [theta_T, 1e-30, 1e-30],
 
     number_density = number_density_scale,
     particles_per_cell = 1,
 )
 
 DiagFields(
-    every = 200,
+    every = 5000,
     fields = ["Ex","Ey","Bz","Jx_electron","Jy_electron","Rho_electron","Rho_deuteron","Rho_tritium"]
 )

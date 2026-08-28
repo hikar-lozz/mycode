@@ -30,19 +30,19 @@ um  = 1.e-6/Lr                     # 1 micro meter in normalized units
 fs  = 1.e-15/Tr                    # 1 femto second in normalized units
 
 ##### Mesh parameters
-dx = 0.048828125*um                # timestepはdx, dyで決まり、今回はtimestep=0.11・・・
-dy = 0.048828125*um
-nx = 8192
-ny = 8192
+dx = 0.09765625*um                # timestepはdx, dyで決まり、今回はtimestep=0.228・・・ fs
+dy = 0.09765625*um
+nx = 4096
+ny = 4096
 Lx = nx * dx
 Ly = ny * dy
 x0 = Lx/2.
 y0 = Ly/2.
 
-shell_inside_radius = 90*um
-shell_thickness = 10*um
+shell_inside_radius = 100*um
+shell_thickness = 2*um
 shell_outside_radius = shell_inside_radius + shell_thickness
-shell_contamination_thickness = 0.5*um
+shell_contamination_thickness = 0.14*um
 # shell_hole_diameter = 90*um
 # shell_cut_position = x0 - math.sqrt((shell_inside_radius)**2 - (shell_hole_diameter/2.)**2)
 
@@ -93,7 +93,7 @@ Main(
       ["silver-muller","silver-muller"],
     ],
   solve_poisson = False,
-  print_every = 100,
+  print_every = 200,
   reference_angular_frequency_SI = wr,
 )
 
@@ -155,7 +155,7 @@ Species(
 
 LaserGaussian2D(
     box_side        = "xmin",
-    a0              = 0.7907686655992375*2,
+    a0              = 1.0002520320855037,
     omega = 1,
     focus           = [Lx/2., Ly/2.],
     waist           = 30*um/math.sqrt(2*math.log(2)),
@@ -163,13 +163,13 @@ LaserGaussian2D(
 )
 
 DiagFields(
-    every = 200,
+    every = 1000,
     fields = ["Ex","Ey","Bz","Rho_electron","Rho_deutron","Rho_carbon","Rho_proton"]
 )
 
 DiagParticleBinning(
 deposited_quantity = "weight",
-every = 200,
+every = 1000,
 species = ["deutron"],
 axes = [
    ["x",0*um,400*um,100],

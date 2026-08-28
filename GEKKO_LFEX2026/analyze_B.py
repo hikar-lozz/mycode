@@ -8,14 +8,13 @@ import numpy as np
 import shutil
 from matplotlib import pyplot as plt
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-import os
 import tqdm
 import scipy.constants
 
 ##### 1. 物理定数とインプットファイルからのパラメータ設定
-e  = scipy.constants.e               # 電荷 [C]
-me = scipy.constants.m_e             # 電子質量 [kg]
-c  = scipy.constants.c               # 光速 [m/s]
+e   = scipy.constants.e               # 電荷 [C]
+me  = scipy.constants.m_e             # 電子質量 [kg]
+c   = scipy.constants.c               # 光速 [m/s]
 
 # レーザーと基準値の設定
 lr  =  1.053e-6                      # レーザー波長 [m]
@@ -24,17 +23,19 @@ Tr  =  1. / wr                       # 基準時間 [s]
 Lr  =  c / wr                        # 基準長さ [m]
 Br  =  me * wr / e                   # 基準磁場 [T]
 
-# インプットファイルから抽出した空間・時間パラメータ
+# インプットファイルから抽出した空間・時間パラメータ (シミュレーション側と一致)
 um = 1.e-6 / Lr                      # 1 um の正規化単位値
-dx = 0.048828125 * um                # セルサイズ x
-dy = 0.048828125 * um                # セルサイズ y
-nx = 8192                            # x方向セル数
-ny = 8192                            # y方向セル数
+dx = 0.048828125 * 0.25 * um        # セルサイズ x（DT_implosion_electron_beam_3x.py と一致）
+dy = 0.048828125 * 0.25 * um        # セルサイズ y（DT_implosion_electron_beam_3x.py と一致）
+nx = 2048                            # x方向セル数
+ny = 2048                            # y方向セル数
+Lx_um = nx * dx * Lr * 1e6          # x方向物理長 [um]
+Ly_um = ny * dy * Lr * 1e6          # y方向物理長 [um]
 
 # 2D Cartesian CFL条件から正規化時間刻み dt を計算
 dt_cfl = 1.0 / math.sqrt(1.0 / (dx**2) + 1.0 / (dy**2))
 dt = 0.99 * dt_cfl                   # timestep_over_CFL = 0.99
-diag_every = 200                     # DiagFields(every = 200)
+diag_every = 5000                    # DiagFields(every = 5000)
 
 ##### 2. フォルダの準備
 data_dir = './Bz_data/'
@@ -54,7 +55,13 @@ timesteps = S.Field(0, 'Bz').getTimesteps()
 print("--- Step 1: Bz データの抽出と一時保存 (.npy) ---")
 for i in tqdm.tqdm(range(int(len(timesteps)))):
     Bz_raw = np.array(S.Field(0, 'Bz').getData(timestep=timesteps[i]))
-    Bz_matrix = Bz_raw[0, :, :].T
+    
+    # 配列の次元数に合わせて安全に2次元抽出
+    if Bz_raw.ndim == 3:
+        Bz_matrix = Bz_raw[0, :, :].T
+    else:
+        Bz_matrix = Bz_raw.T
+        
     Bz_kT = Bz_matrix * (Br * 0.001)  # [T] から [kT] へ変換
     np.save(data_dir + 'Bz_' + str(i) + '.npy', Bz_kT)
 
@@ -72,27 +79,25 @@ for i in tqdm.tqdm(range(int(len(timesteps)))):
     time_ps = (actual_timestep * dt * Tr) * 1e12
     ax1.text(0.99, 0.99, "time = {:.2f} [ps]".format(time_ps), va='top', ha='right', transform=ax1.transAxes, color='black')
     
-    # 描画
-    img1 = ax1.imshow(Bz_data, aspect='equal', origin='lower', cmap='bwr', vmin=-30, vmax=30)
+    # 描画（表示レンジは元コードの -10 ～ 10 kT を維持）
+    img1 = ax1.imshow(Bz_data, aspect='equal', origin='lower', cmap='bwr', vmin=-1, vmax=1,
+                      extent=[0, Lx_um, 0, Ly_um])
     
-    #【ここを修正しました】make_axes_locatable を使わずにカラーバーを設定
-    # fraction=0.046 でメインのグラフと縦幅を揃え、pad=0.04 で適切な隙間を空けています
+    # カラーバー設定 (元のコード指定をそのまま保持)
     cbar1 = fig.colorbar(img1, ax=ax1, fraction=0.046, pad=0.04)
     cbar1.set_label("Magnetic field [kT]")
     
     ax1.set_title('Bz')
-    ax1.set_xlabel("x [$\mu$m]")
-    ax1.set_ylabel("y [$\mu$m]")
+    ax1.set_xlabel(r"x [$\mu$m]")
+    ax1.set_ylabel(r"y [$\mu$m]")
     
-    # 空間軸の目盛りを自動マッピング
-    ax1.set_xticks([0, 2048, 4096, 6144, 8192])
-    ax1.set_xticklabels(["0", "100", "200", "300", "400"])
-    ax1.set_yticks([0, 2048, 4096, 6144, 8192])
-    ax1.set_yticklabels(["0", "100", "200", "300", "400"])
+    # 空間軸は extent により物理座標 [um] を直接表示
+    ax1.set_xlim(0, Lx_um)
+    ax1.set_ylim(0, Ly_um)
 
-    # 保存
+    # 保存 (元の書き方のまま)
     fig.savefig('{}/Bz_{:03d}.png'.format(fig_dir, i))
-    plt.close(fig)  # メモリリーク対策のため fig を明示的に閉じるように変更
+    plt.close(fig)
 
 # 一時フォルダの削除
 shutil.rmtree(data_dir)

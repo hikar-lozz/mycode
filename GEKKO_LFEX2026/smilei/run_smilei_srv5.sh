@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 NUM_OMP=16          # Number of OpenMP parallelization
 NUM_MPI=1           # Number of MPI parallelization
-INPUT=.py    # Input file (namelist)
+INPUT=DT_implosion_electron_beam_6x.py    # Input file (namelist)
 OUTPUT=out.log      # Standard output file
 STATUS=job.status
 
