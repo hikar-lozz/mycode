@@ -1,5 +1,6 @@
-# hil5利用時はimport happiをコメントアウトして以下を実行
-diagnostics_path = "/media/ymraid5-5/Kensei/Smilei/scripts/Diagnostics.py"
+# hil4利用時はimport happiをコメントアウトして以下を実行
+import os
+diagnostics_path = os.path.expanduser("~/Smilei/scripts/Diagnostics.py")
 exec(compile(open(diagnostics_path).read(), diagnostics_path, 'exec'))
 
 import math
