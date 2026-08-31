@@ -42,7 +42,7 @@ y0 = Ly/2.
 shell_inside_radius = 100*um
 shell_thickness = 2*um
 shell_outside_radius = shell_inside_radius + shell_thickness
-shell_contamination_thickness = 0.14*um
+shell_contamination_thickness = 0.5*um
 # shell_hole_diameter = 90*um
 # shell_cut_position = x0 - math.sqrt((shell_inside_radius)**2 - (shell_hole_diameter/2.)**2)
 
@@ -155,7 +155,7 @@ Species(
 
 LaserGaussian2D(
     box_side        = "xmin",
-    a0              = 1.0002520320855037,
+    a0              = 2.2366315383618757,
     omega = 1,
     focus           = [Lx/2., Ly/2.],
     waist           = 30*um/math.sqrt(2*math.log(2)),
