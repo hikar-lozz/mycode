@@ -54,7 +54,7 @@ DT_density_normalized = rho / 1000 * 1000000 / 1837.4 / 5 / me / Nr
 E_density_normalized = rho * 2 / 1000 * 1000000 / 1837.4 / 5 / me / Nr
 R_m_normalized = R_um * 1e-6 / Lr
 
-# rの最小・最大（正規化済）
+# rの最小・最大
 r_min = min(R_m_normalized)
 r_max = max(R_m_normalized)
 
@@ -62,20 +62,20 @@ r_max = max(R_m_normalized)
 DT_min_val = rho[0] / 1000 * 1e6 / 1837.4 / 5 / me / Nr
 E_min_val = rho[0] * 2 / 1000 * 1e6 / 1837.4 / 5 / me / Nr
 
-# PCHIP補完ver
+# PCHIP補間ver（離散的な密度データをPCHIP補間によって連続的なデータに変換）
 pchip_DT = PchipInterpolator(R_m_normalized, DT_density_normalized, extrapolate=True)
 pchip_E  = PchipInterpolator(R_m_normalized, E_density_normalized, extrapolate=True)
 
-# ラップ：r < r_min では定数を返す
+# 密度分布関数（r < r_min では定数を返す, 密度の上限はスキン長を短くし過ぎないように設定している）
 def rho_DT(r):
     r = np.asarray(r)
     raw = np.where(r < r_min, DT_min_val, pchip_DT(r))
-    return np.minimum(raw, 100)
+    return np.minimum(raw, 94)
 
 def rho_E(r):
     r = np.asarray(r)
     raw = np.where(r < r_min, E_min_val, pchip_E(r))
-    return np.minimum(raw, 200)
+    return np.minimum(raw, 188)
 
 # 密度分布関数（中心座標固定）
 def electron_density(x, y):
@@ -116,7 +116,6 @@ Species(
     name = "electron",
     position_initialization = "random",
     momentum_initialization = "maxwell-juettner",
-    #particles_per_cell = electron_ppc,
     particles_per_cell = 80, # 800→80
     mass = 1.0,
     charge = -1.0,
@@ -131,8 +130,7 @@ Species(
     name = "deuteron",
     position_initialization = "random",
     momentum_initialization = "maxwell-juettner",
-    #particles_per_cell = deuteron_ppc,
-    particles_per_cell = 8, # 80→8
+    particles_per_cell = 10, # 80→10
     mass = 1837.4*2,
     charge = 1.0,
     number_density = deuteron_density,
@@ -146,8 +144,7 @@ Species(
     name = "tritium",
     position_initialization = "random",
     momentum_initialization = "maxwell-juettner",
-    #particles_per_cell = tritium_ppc,
-    particles_per_cell = 8, # 80→8
+    particles_per_cell = 10, # 80→10
     mass = 1837.4*3,
     charge = 1.0,
     number_density = tritium_density,
@@ -158,29 +155,7 @@ Species(
 )
 
 # ============================================================
-# ParticleInjector に必要な（依存する）namelist部品一式
-#  - ここでは「電子を xmin から注入」
-#  - 運動量分布：maxwell-juettner（相対論的 Maxwell）
-#  - x方向にドリフト：E_drift = 4.91 MeV を仮定（= バルク運動エネルギー）
-#  - （もし「温度」も 4.91 MeV にしたいなら theta_T も 9.61 を使う）
-# ============================================================
-
-# ---- 物理定数（SI） ----
-c = 299792458.0  # [m/s]
-
-# ---- あなたの系の規格化（外部で定義済みならここは不要）----
-# Tr: 基準時間 [s]
-# Lr: 基準長さ [m]
-# Nr: 基準密度 [m^-3]
-# Ly: y方向長さ（規格化 or SI のどちらか、あなたの式に合わせる）
-# ※すでに上流で定義しているなら、この4行は消してください。
-# Tr = ...
-# Lr = ...
-# Nr = ...
-# Ly = ...
-
-# ============================================================
-# 1) パルス時間エンベロープ（SI→規格化）
+# 1) 電子ビームの時間プロファイル（step1の計算に合わせ、t=1 psをピークとして時間幅1 psで起きるようにする）
 # ============================================================
 tau_si = 1.0e-12  # [s] FWHM
 t0_si  = 1.0e-12  # [s] 中心
@@ -188,75 +163,82 @@ tau = tau_si / Tr
 t0  = t0_si  / Tr
 
 # ============================================================
-# 2) ドリフト速度 beta を「ドリフト運動エネルギー」から作る
-#    E_drift = 4.91 MeV を x方向の平行運動（バルク）として解釈
+# 2) 電子温度を 4.91 MeV にする場合の規格化温度 theta
+#    step1においてx = 1250 umを通過する電子のエネルギースペクトルから得た温度
+#    theta = T_e / (m_e c^2) = 4.91/0.511 ~ 9.61
 # ============================================================
-E_drift_MeV = 4.91
-me_c2_MeV   = 0.511
-gamma_drift = 1.0 + E_drift_MeV / me_c2_MeV
-beta_n_0    = np.sqrt(1.0 - 1.0 / (gamma_drift**2))  # ~0.995547...
-p_x = gamma_drift * beta_n_0
+T_e = 4.91
+me_c2_MeV = 0.511
+theta_T = T_e / me_c2_MeV  # 9.61...
 
 # ============================================================
-# 3) （オプション）熱温度を 4.91 MeV にする場合の規格化温度 theta
-#    theta = kT / (m_e c^2) = 4.91/0.511 ~ 9.61
-#    ※「温度4.91MeVの電子」という表現が“熱”を指すならこちらを使う
+# 3) 電子のx方向の平均速度
+#    本来であれば、電子のエネルギースペクトルから直接得た平均速度を用いるべきだが、ここでは暫定的に0.8cを用いる
 # ============================================================
-theta_T = E_drift_MeV / me_c2_MeV  # 9.61...
+# v_x_ave = ? (m/s)
+# beta_n_0 = v_x_ave / c
+beta_n_0 = 0.8
 
 # ============================================================
-# 4) 種（Species）定義：Injector が species を参照するので必要
-#    すでに electron species を別で定義しているなら、この Species は不要
+# 4) 電子注入数を7.627098665328835e12にする場合の電子密度（電子1個当たりの平均エネルギーが4.91 MeVであると仮定）
+#    本来であれば、電子のエネルギースペクトルから直接得た平均エネルギーを用いるべきだが、ここでは暫定的に4.91 MeVを用いる
+#    N_e*dt = A*v_e*n_e(t)dt
+#    N_e = A*v_e*∫n_e(t)dt = A*v_e*n_e_0*τFWHM*sqrt(π/4ln2)（ガウシアンの場合）
 # ============================================================
-"""
-Species(
-    name = "electron",
-    position_initialization = "random",
-    momentum_initialization = "maxwell-juettner",  # injector側で上書きしてもOK
-    mean_velocity = [0., 0., 0.],                  # injector側で上書き
-    temperature = [1.0e-3],                        # injector側で上書き
-    particles_per_cell = 1,                        # injector側で上書き
-    mass = 1.0,
-    charge = -1.0,
-)
-"""
-# ============================================================
-# 5) 注入数（実粒子数）から number_density を作る
-#    N_target_0 = 7.627...e12（今回）
-# ============================================================
-N_target_0 = 7.627098665328835e12 * 6
+N_e = 7.627098665328835e12
+A = (Ly * Lr) * Lr # z方向は単位長さLr(m)とする
+v_e = beta_n_0 * c
+n_e_0 = N_e / (A * v_e * tau_si * np.sqrt(np.pi/(4.0*np.log(2.0))))
+number_density_scale = n_e_0 / Nr
 
-# あなたの式：N = n * Nr * (Ly*Lr) * (beta*c) * (tau_si * sqrt(pi/(4 ln2)))
-# ここで (Ly*Lr) は「境界面積（2Dなら長さ）」のつもりの項
-number_density_scale = N_target_0 / (
-    Nr * (Ly * Lr) * (beta_n_0 * c) * (tau_si * np.sqrt(np.pi/(4.0*np.log(2.0))))
-)
-
-# ============================================================
-# 6) Particle Injector 本体（必要部分）
-# ============================================================
 ParticleInjector(
     name = "inj_0",
     species = "electron",
     box_side = "xmin",
     time_envelope = tgaussian(center=t0, fwhm=tau),
-
-    # 相対論的 Maxwell（Jüttner）
     momentum_initialization = "maxwell-juettner",
-
-    # x方向ドリフト（v/c）
-    mean_velocity = [0., 0., 0.],
-
-    # 温度：
-    # - 「熱温度 4.91 MeV」なら theta_T（=9.61）を入れる
-    # - 「熱は不要で単色ビーム」なら極小（例: 1e-30）
-    temperature = [theta_T, 1e-30, 1e-30],
-
+    mean_velocity = [beta_n_0, 0., 0.],
+    temperature = [theta_T, 1e-6, 1e-6],
     number_density = number_density_scale,
-    particles_per_cell = 1,
+    particles_per_cell = 10,
 )
 
 DiagFields(
     every = 5000,
     fields = ["Ex","Ey","Bz","Jx_electron","Jy_electron","Rho_electron","Rho_deuteron","Rho_tritium"]
+)
+
+DiagParticleBinning(
+    deposited_quantity = "weight",
+    every = 5000,
+    species = ["electron"],
+    axes = [
+        ["x", 0, Lx, 200],
+        ["y", 0, Ly, 200]
+    ]
+)
+
+DiagParticleBinning(
+    deposited_quantity = "weight",
+    every = 5000,
+    species = ["electron"],
+    axes = [
+        ["px", 0, 50, 200] 
+    ]
+)
+
+DiagParticleBinning(
+    deposited_quantity = "weight",
+    every = 5000,
+    species = ["electron"],
+    axes = [
+        ["py", -25, 25, 200]
+    ]
+)
+
+Checkpoints(
+    # restart_dir = "dump1",
+    dump_step = 8750,
+    exit_after_dump = False,
+    keep_n_dumps = 1,
 )

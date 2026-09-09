@@ -30,8 +30,8 @@ um  = 1.e-6/Lr                     # 1 micro meter in normalized units
 fs  = 1.e-15/Tr                    # 1 femto second in normalized units
 
 ##### Mesh parameters
-dx = 0.09765625*um                # timestepはdx, dyで決まり、今回はtimestep=0.228・・・ fs
-dy = 0.09765625*um
+dx = 0.048828125*um                # timestepはdx, dyで決まり、今回はtimestep=0.228・・・ fs
+dy = 0.048828125*um
 nx = 4096
 ny = 4096
 Lx = nx * dx
@@ -39,43 +39,43 @@ Ly = ny * dy
 x0 = Lx/2.
 y0 = Ly/2.
 
-shell_inside_radius = 100*um
-shell_thickness = 2*um
+shell_inside_radius = 50*um
+shell_thickness = 7*um
 shell_outside_radius = shell_inside_radius + shell_thickness
 shell_contamination_thickness = 0.5*um
-# shell_hole_diameter = 90*um
-# shell_cut_position = x0 - math.sqrt((shell_inside_radius)**2 - (shell_hole_diameter/2.)**2)
+shell_hole_diameter = 50*um
+shell_cut_position = x0 - math.sqrt((shell_inside_radius)**2 - (shell_hole_diameter/2.)**2)
 
 def electron_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius:
+    if (shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius) and (x > shell_cut_position):
         return 10.
-    elif shell_inside_radius < r < shell_outside_radius:
+    elif (shell_inside_radius < r < shell_outside_radius) and (x > shell_cut_position):
         return 30.
-    elif shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness:
+    elif (shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness) and (x > shell_cut_position):
         return 10.
     else:
         return 0.
     
 def deutron_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if shell_inside_radius < r < shell_outside_radius:
+    if (shell_inside_radius < r < shell_outside_radius) and (x > shell_cut_position):
         return 30./7.
     else:
         return 0.
 
 def carbon_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if shell_inside_radius < r < shell_outside_radius:
+    if (shell_inside_radius < r < shell_outside_radius) and (x > shell_cut_position):
         return 30./7.
     else:
         return 0.
 
 def proton_density(x,y):
     r = math.sqrt((x - x0)**2 + (y - y0)**2)
-    if shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius:
+    if (shell_inside_radius - shell_contamination_thickness < r < shell_inside_radius) and (x > shell_cut_position):
         return 10.
-    elif shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness:
+    elif (shell_outside_radius < r < shell_outside_radius + shell_contamination_thickness) and (x > shell_cut_position):
         return 10.
     else:
         return 0.
@@ -93,7 +93,7 @@ Main(
       ["silver-muller","silver-muller"],
     ],
   solve_poisson = False,
-  print_every = 200,
+  print_every = 400,
   reference_angular_frequency_SI = wr,
 )
 
@@ -155,7 +155,7 @@ Species(
 
 LaserGaussian2D(
     box_side        = "xmin",
-    a0              = 2.2366315383618757,
+    a0              = 1.581537336940825,
     omega = 1,
     focus           = [Lx/2., Ly/2.],
     waist           = 30*um/math.sqrt(2*math.log(2)),
@@ -163,24 +163,24 @@ LaserGaussian2D(
 )
 
 DiagFields(
-    every = 1000,
+    every = 2000,
     fields = ["Ex","Ey","Bz","Rho_electron","Rho_deutron","Rho_carbon","Rho_proton"]
 )
 
 DiagParticleBinning(
 deposited_quantity = "weight",
-every = 1000,
+every = 2000,
 species = ["deutron"],
 axes = [
-   ["x",0*um,400*um,100],
-   ["y",0*um,400*um,100],
+   ["x",0*um,200*um,100],
+   ["y",0*um,200*um,100],
    ["ekin",0,40,1000]
 ]
 )
 
 Checkpoints(
     # restart_dir = "dump1",
-    dump_step = 5000,
+    dump_step = 10000,
     exit_after_dump = False,
     keep_n_dumps = 1,
 )
