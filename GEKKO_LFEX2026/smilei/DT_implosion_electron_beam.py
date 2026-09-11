@@ -172,22 +172,21 @@ me_c2_MeV = 0.511
 theta_T = T_e / me_c2_MeV  # 9.61...
 
 # ============================================================
-# 3) 電子のx方向の平均速度
-#    本来であれば、電子のエネルギースペクトルから直接得た平均速度を用いるべきだが、ここでは暫定的に0.8cを用いる
+# 3) 電子のx方向の平均速度（0でいいらしい）
 # ============================================================
 # v_x_ave = ? (m/s)
 # beta_n_0 = v_x_ave / c
-beta_n_0 = 0.8
 
 # ============================================================
 # 4) 電子注入数を7.627098665328835e12にする場合の電子密度（電子1個当たりの平均エネルギーが4.91 MeVであると仮定）
 #    本来であれば、電子のエネルギースペクトルから直接得た平均エネルギーを用いるべきだが、ここでは暫定的に4.91 MeVを用いる
-#    N_e*dt = A*v_e*n_e(t)dt
-#    N_e = A*v_e*∫n_e(t)dt = A*v_e*n_e_0*τFWHM*sqrt(π/4ln2)（ガウシアンの場合）
+#    N_e_per_dt = A*v_e*dt*n_e(t)
+#    N_e = A*v_e*∫n_e(t)dt (-inf~infまで足しあわせる)
+#        = A*v_e*n_e_0*τFWHM*sqrt(π/4ln2)（ガウシアンの場合）
 # ============================================================
-N_e = 7.627098665328835e12
-A = (Ly * Lr) * Lr # z方向は単位長さLr(m)とする
-v_e = beta_n_0 * c
+A = np.pi * ((Ly * Lr) / 2.0)**2
+v_e = c
+N_e = 7.627098665328835e12 * 2
 n_e_0 = N_e / (A * v_e * tau_si * np.sqrt(np.pi/(4.0*np.log(2.0))))
 number_density_scale = n_e_0 / Nr
 
@@ -197,7 +196,7 @@ ParticleInjector(
     box_side = "xmin",
     time_envelope = tgaussian(center=t0, fwhm=tau),
     momentum_initialization = "maxwell-juettner",
-    mean_velocity = [beta_n_0, 0., 0.],
+    mean_velocity = [0., 0., 0.],
     temperature = [theta_T, 1e-6, 1e-6],
     number_density = number_density_scale,
     particles_per_cell = 10,
@@ -206,16 +205,6 @@ ParticleInjector(
 DiagFields(
     every = 5000,
     fields = ["Ex","Ey","Bz","Jx_electron","Jy_electron","Rho_electron","Rho_deuteron","Rho_tritium"]
-)
-
-DiagParticleBinning(
-    deposited_quantity = "weight",
-    every = 5000,
-    species = ["electron"],
-    axes = [
-        ["x", 0, Lx, 200],
-        ["y", 0, Ly, 200]
-    ]
 )
 
 DiagParticleBinning(
